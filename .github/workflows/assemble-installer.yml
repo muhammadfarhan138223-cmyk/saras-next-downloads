@@ -1,0 +1,60 @@
+name: Assemble verified SARAS installer
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: saras-installer-assembly
+  cancel-in-progress: false
+jobs:
+  assemble:
+    # Standard hosted jobs in public repositories use GitHub's free public tier.
+    # Never start a runner in a private repository through this workflow.
+    if: github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Reassemble exact tested binary and verify the uploaded asset
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,os,re,subprocess
+          from pathlib import Path
+          REPO=os.environ['GH_REPO'];TAG='v0.2.0-dev.10'
+          EXPECTED='1f3f856f09afd49a8c813e2a7b572478bf4cdcf85b948c7e47ef9e7cd7347985'
+          NAME='SARAS-Next-0.2.0-dev.10-Windows-x64-Setup.exe';SIZE=283854445
+          def gh(*args):return subprocess.check_output(['gh',*args],text=True)
+          repo=json.loads(gh('repo','view',REPO,'--json','isPrivate'))
+          assert repo['isPrivate'] is False,'Public free-tier repository required'
+          releases=json.loads(gh('api',f'repos/{REPO}/releases'))
+          release=next(r for r in releases if r['tag_name']==TAG)
+          assert release['draft'],'Refuse to change a published release'
+          folder=Path('assembly');folder.mkdir()
+          gh('release','download',TAG,'--repo',REPO,'--pattern','transfer-manifest.json','--pattern','installer-transfer-*.part','--dir',str(folder))
+          manifest=json.loads((folder/'transfer-manifest.json').read_text())
+          assert manifest['installer']==NAME and manifest['sha256']==EXPECTED and manifest['bytes']==SIZE
+          assert 1<=len(manifest['parts'])<=100
+          output=folder/NAME
+          with output.open('wb') as target:
+              for index,part in enumerate(manifest['parts'],1):
+                  assert part['name']==f'installer-transfer-{index:03d}.part'
+                  data=(folder/part['name']).read_bytes()
+                  assert len(data)==part['bytes'] and hashlib.sha256(data).hexdigest()==part['sha256']
+                  target.write(data)
+          with output.open('rb') as source:assert hashlib.file_digest(source,'sha256').hexdigest()==EXPECTED
+          assert output.stat().st_size==SIZE
+          gh('release','upload',TAG,str(output),'--repo',REPO,'--clobber')
+          remote=json.loads(gh('api',f'repos/{REPO}/releases/{release["id"]}'))
+          asset=next(a for a in remote['assets'] if a['name']==NAME)
+          assert asset['state']=='uploaded' and asset['size']==SIZE and asset['digest']=='sha256:'+EXPECTED
+          proof={'passed':True,'installer':NAME,'bytes':SIZE,'sha256':EXPECTED,'method':'verified part assembly; binary unchanged','public_release':False}
+          proof_path=folder/'github-assembly-proof.json';proof_path.write_text(json.dumps(proof,indent=2))
+          gh('release','upload',TAG,str(proof_path),'--repo',REPO,'--clobber')
+          for asset in remote['assets']:
+              if re.fullmatch(r'installer-transfer-\d{3}\.part',asset['name']):
+                  gh('api','--method','DELETE',f'repos/{REPO}/releases/assets/{asset["id"]}')
+          print('Verified original Setup uploaded. Release remains a draft; nothing published.')
+          PY
