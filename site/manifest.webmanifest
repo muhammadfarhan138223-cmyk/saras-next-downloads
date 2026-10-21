@@ -1,0 +1,18 @@
+{
+  "id": "/",
+  "name": "SARAS Next — Your voice. Your computer.",
+  "short_name": "SARAS Next",
+  "description": "Explore SARAS Next, the voice-led Windows companion.",
+  "start_url": "/?source=installed-app",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#f5f6ee",
+  "theme_color": "#f5f6ee",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    { "src": "/assets/pwa-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

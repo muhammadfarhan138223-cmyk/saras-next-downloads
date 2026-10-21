@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0-dev.10",
+  "enabled": true,
+  "approvedForPublication": true,
+  "channel": "unsigned-preview",
+  "unsignedAcknowledged": true,
+  "url": "https://github.com/muhammadfarhan138223-cmyk/saras-next-downloads/releases/download/v0.2.0-dev.10/SARAS-Next-0.2.0-dev.10-Windows-x64-Setup.exe",
+  "sha256": "1f3f856f09afd49a8c813e2a7b572478bf4cdcf85b948c7e47ef9e7cd7347985",
+  "bytes": 283854445,
+  "checks": {
+    "build": true,
+    "installedRuntime": true,
+    "uninstall": true,
+    "pairingAndRevocation": true,
+    "privateDataAudit": true,
+    "dependencyAudit": true,
+    "licenseInventory": true,
+    "cleanWindows": false,
+    "licenseReview": false,
+    "authenticode": false,
+    "defender": true,
+    "independentSecurityReview": false
+  }
+}

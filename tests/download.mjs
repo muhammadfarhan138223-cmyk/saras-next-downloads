@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import { canDownload, requiredChecks, previewChecks, windowsRelease } from '../lib/windows-release.mjs';
+import handler from '../api/download.js';
+assert.equal(canDownload({...windowsRelease,enabled:false}),false);
+const verified={...windowsRelease,channel:'stable',unsignedAcknowledged:false,enabled:true,approvedForPublication:true,url:'https://downloads.example.com/SARAS-Setup.exe',bytes:200000000,sha256:'a'.repeat(64),checks:Object.fromEntries(requiredChecks.map(key=>[key,true]))};
+assert.equal(canDownload(verified),true);
+for(const key of requiredChecks) assert.equal(canDownload({...verified,checks:{...verified.checks,[key]:false}}),false,key);
+const preview={...verified,channel:'unsigned-preview',unsignedAcknowledged:true,checks:Object.fromEntries(previewChecks.map(key=>[key,true]))};
+assert.equal(canDownload(preview),true);
+assert.equal(canDownload({...preview,unsignedAcknowledged:false}),false);
+for(const key of previewChecks)assert.equal(canDownload({...preview,checks:{...preview.checks,[key]:false}}),false,key);
+for(const url of ['http://example.com/a.exe','https://user:password@example.com/a.exe','https://127.0.0.1/a.exe','https://example.com/a.exe?token=secret','javascript:alert(1)'])assert.equal(canDownload({...verified,url}),false,url);
+const res={headers:{},setHeader(k,v){this.headers[k]=v},status(n){this.code=n;return this},json(value){this.body=value;return this},end(){return this}};
+handler({method:'GET'},res);assert.equal(res.code,canDownload()?307:503);assert.equal(res.headers.Location,canDownload()?windowsRelease.url:undefined);assert.match(res.headers['Cache-Control'],/no-store/);
+handler({method:'POST'},res);assert.equal(res.code,405);
+console.log('Download gate checks passed: incomplete/unapproved releases cannot be downloaded.');

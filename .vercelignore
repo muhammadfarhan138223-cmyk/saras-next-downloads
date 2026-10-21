@@ -1,0 +1,6 @@
+dist/
+outputs/
+node_modules/
+.env.local
+.env.production
+*.log
