@@ -37,10 +37,13 @@ jobs:
           manifest=json.loads((folder/'transfer-manifest.json').read_text())
           assert manifest['installer']==NAME and manifest['sha256']==EXPECTED and manifest['bytes']==SIZE
           assert 1<=len(manifest['parts'])<=100
+          names=[part['name'] for part in manifest['parts']]
+          assert len(set(names))==len(names)
           output=folder/NAME
           with output.open('wb') as target:
               for index,part in enumerate(manifest['parts'],1):
-                  assert part['name']==f'installer-transfer-{index:03d}.part'
+                  assert re.fullmatch(r'installer-transfer-\d{3}(?:-\d{2})?\.part',part['name'])
+                  assert 0<part['bytes']<=16*1024*1024
                   data=(folder/part['name']).read_bytes()
                   assert len(data)==part['bytes'] and hashlib.sha256(data).hexdigest()==part['sha256']
                   target.write(data)
@@ -54,7 +57,7 @@ jobs:
           proof_path=folder/'github-assembly-proof.json';proof_path.write_text(json.dumps(proof,indent=2))
           gh('release','upload',TAG,str(proof_path),'--repo',REPO,'--clobber')
           for asset in remote['assets']:
-              if re.fullmatch(r'installer-transfer-\d{3}\.part',asset['name']):
+              if re.fullmatch(r'installer-transfer-\d{3}(?:-\d{2})?\.part',asset['name']):
                   gh('api','--method','DELETE',f'repos/{REPO}/releases/assets/{asset["id"]}')
           print('Verified original Setup uploaded. Release remains a draft; nothing published.')
           PY
