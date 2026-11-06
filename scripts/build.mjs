@@ -49,13 +49,15 @@ for (const file of pages) {
     html = html.replace('We will only use your address for SARAS product news. Your email stays in the existing SARAS Supabase project; it is separate from app accounts and PC pairing.', 'Join the optional SARAS product and release email list. Your address is stored separately from app accounts and PC pairing. Signups are saved now; email delivery will begin when SARAS email announcements launch.');
   }
   if (file === path.join(output,'download','index.html')) {
-    html = html.replace('0.2.0-dev.9',windowsRelease.version);
-    const control = canDownload() || localDownload
-      ? '<a class="button primary" href="'+(localDownload||'/api/download')+'" '+(localDownload?'download':'')+'>Download unsigned Windows preview</a><p class="fineprint">Unsigned preview: Windows may display Unknown publisher. Tested locally; separate clean-device acceptance is still pending.<br>SHA-256: '+windowsRelease.sha256+'</p>'
-      : '<button class="button primary" type="button" disabled aria-disabled="true">Windows download — verification in progress</button>';
-    html = html.replace('<div class="download-state">',control+'<div class="download-state">');
-    html=html.replace('WINDOWS · PRIVATE PILOT','WINDOWS · UNSIGNED PREVIEW').replace('The current package is being validated for private testing. A public download is not available yet.','A complete Windows Setup application with its own Python runtime, offline speech recognition, desktop companions and Windows speech. No Python, VS Code or coding knowledge is required. Each user configures their own AI provider key.').replace('Extract or install the verified package.','Download the Setup EXE and follow its installation wizard.').replace('This is an unsigned development pilot. Public account registration, a signed installer, a public update channel and final distribution review are still pending.','This unsigned preview has passed the recorded local checks. It has not yet passed separate clean-device or independent review. Your installation uses its own local data and permissions; no shared founder login is required.');
-    html=html.replace('Public installer coming after release validation',localDownload?'Unsigned preview download ready on this computer':canDownload()?'Free unsigned Windows preview':'Public file hosting link is being connected');
+    const available = canDownload() || localDownload;
+    const fileSize = Math.round(windowsRelease.bytes / 1048576);
+    const control = available
+      ? '<a id="download-installer" class="download-cta" href="'+(localDownload||'/api/download')+'" '+(localDownload?'download':'')+' aria-describedby="download-status"><span class="download-cta-icon" aria-hidden="true">↓</span><span class="download-cta-copy"><strong>Download SARAS for Windows</strong><small>Setup EXE · '+fileSize+' MiB · Free preview</small></span><span class="download-cta-arrow" aria-hidden="true">→</span></a><p id="download-status" class="download-status" role="status" aria-live="polite">Official Windows installer · '+fileSize+' MiB · No Python install needed.</p>'
+      : '<button class="download-cta is-unavailable" type="button" disabled aria-disabled="true"><span class="download-cta-icon" aria-hidden="true">…</span><span class="download-cta-copy"><strong>Windows download is being verified</strong><small>Check this page again for availability.</small></span></button><p class="download-status" role="status">The verified Windows download is temporarily unavailable.</p>';
+    html = html.replace('<!-- DOWNLOAD_ACTION -->', control);
+    html = html.replaceAll('__SARAS_VERSION__',windowsRelease.version).replaceAll('__SARAS_SHA256__',windowsRelease.sha256);
+    html = html.replace('</head>', '<link rel="stylesheet" href="/assets/download.css"></head>');
+    html = html.replace('</body>', '<script defer src="/assets/download.js"></script></body>');
   }
   html = html.replaceAll('https://saras-next-assistant.airypixie256.chatgpt.site', base);
   if (file === path.join(output, '404.html')) html = html.replace(/<link rel="canonical" href="[^"]+">/g, '').replace('<meta name="robots" content="index,follow,max-image-preview:large">', '<meta name="robots" content="noindex,nofollow">');
