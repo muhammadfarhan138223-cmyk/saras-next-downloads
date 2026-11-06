@@ -41,6 +41,13 @@ async function walk(dir) {
 const pages = (await walk(output)).filter(file => file.endsWith('.html'));
 for (const file of pages) {
   let html = await readFile(file, 'utf8');
+  html = html.replace('<a class="" href="/faq/">Help</a>', '<a class="" href="/guide/">Setup guide</a><a class="" href="/history/">Versions</a><a class="" href="/faq/">Help</a>');
+  html = html.replace('<a class="" href="/faq/">FAQ</a>', '<a class="" href="/guide/">Setup guide</a><a class="" href="/history/">Versions &amp; history</a><a class="" href="/faq/">FAQ</a>');
+  if (file === path.join(output,'updates','index.html')) {
+    html = html.replace('<body>', '<body class="updates-page">');
+    html = html.replace('</head>', '<link rel="stylesheet" href="/assets/updates.css"></head>');
+    html = html.replace('We will only use your address for SARAS product news. Your email stays in the existing SARAS Supabase project; it is separate from app accounts and PC pairing.', 'Join the optional SARAS product and release email list. Your address is stored separately from app accounts and PC pairing. Signups are saved now; email delivery will begin when SARAS email announcements launch.');
+  }
   if (file === path.join(output,'download','index.html')) {
     html = html.replace('0.2.0-dev.9',windowsRelease.version);
     const control = canDownload() || localDownload
@@ -63,8 +70,9 @@ for (const file of pages) {
   await writeFile(file, html);
 }
 
-const paths = pages.map(file => '/' + path.relative(output, file).replaceAll('\\', '/').replace(/index\.html$/, ''));
+const indexablePages = pages.filter(file => !['404.html', 'offline.html'].includes(path.basename(file)));
+const paths = indexablePages.map(file => '/' + path.relative(output, file).replaceAll('\\', '/').replace(/index\.html$/, ''));
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(url => `<url><loc>${base}${url}</loc></url>`).join('')}</urlset>`;
 await writeFile(path.join(output, 'sitemap.xml'), sitemap);
-await writeFile(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${base}/sitemap.xml\n`);
+await writeFile(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${base}/sitemap.xml\n`);
 console.log(`Built ${pages.length} HTML pages for ${base}`);

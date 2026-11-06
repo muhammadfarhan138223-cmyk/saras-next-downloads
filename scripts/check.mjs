@@ -11,6 +11,7 @@ if(manifest.display!=='standalone'||manifest.scope!=='/')failures.push('Manifest
 if(files.some(file=>file.includes(`${path.sep}login${path.sep}`)||file.includes(`${path.sep}signup${path.sep}`)))failures.push('Customer account pages remain in the public project');
 const sitemap=await readFile(path.join(root,'sitemap.xml'),'utf8');if(sitemap.includes('airypixie256.chatgpt.site'))failures.push('Sitemap points at the old private preview');
 const api=await readFile(path.resolve('api/updates.js'),'utf8');
-if(!api.includes('SUPABASE_SERVICE_ROLE_KEY')||api.includes('service_role_key=')||api.includes('Access-Control-Allow-Origin'))failures.push('Newsletter API server key or cross-origin rules need review');
+const newsletter=await readFile(path.resolve('supabase/functions/saras-marketing/index.ts'),'utf8');
+if(!api.includes('/functions/v1/saras-marketing')||!newsletter.includes('SUPABASE_SERVICE_ROLE_KEY')||newsletter.includes('Access-Control-Allow-Origin'))failures.push('Newsletter API must proxy through its JWT-verified server-side function without exposing a service key.');
 if(failures.length){console.error(failures.join('\n'));process.exit(1)}
 console.log(`Site check passed: ${html.length} pages, PWA manifest, offline shell, no customer auth links.`);

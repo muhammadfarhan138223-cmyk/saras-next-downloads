@@ -1,0 +1,25 @@
+.updates-page .auth-card{width:min(100%,690px);max-width:690px;margin:10px auto 40px;text-align:left;padding:clamp(24px,5vw,48px);background:var(--white);box-shadow:0 20px 60px #193c2a0d}
+.updates-page .auth-card>.auth-symbol,.updates-page .auth-card>h2,.updates-page .auth-card>p:first-of-type{text-align:center}
+.updates-page .auth-card>.auth-symbol{display:block;margin-bottom:12px}
+.updates-page .auth-card>h2{font-size:clamp(28px,5vw,38px);line-height:1.15;margin:0 auto 14px;max-width:520px}
+.updates-page .auth-card>p:first-of-type{max-width:520px;margin:0 auto 28px;color:var(--muted);line-height:1.75}
+.updates-page #updates-form{display:grid;gap:12px;text-align:left}
+.updates-page #updates-form>label:first-child{font-size:13px;font-weight:700;color:var(--ink)}
+.updates-page #updates-email{display:block;width:100%;min-height:54px;border:1px solid var(--line);border-radius:11px;background:var(--paper);padding:13px 15px;color:var(--ink);font:inherit;font-size:16px;outline:none;transition:border-color .18s,box-shadow .18s}
+.updates-page #updates-email:focus{border-color:#2d7656;box-shadow:0 0 0 4px #2d765620}
+.updates-page .updates-consent{display:flex;align-items:flex-start;gap:11px;margin:5px 0 7px;color:var(--muted);font-size:13px;line-height:1.65;cursor:pointer}
+.updates-page .updates-consent input{flex:0 0 19px;width:19px;height:19px;margin:2px 0 0;accent-color:#175440}
+.updates-page .updates-honeypot{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+.updates-page #updates-form button{width:100%;min-height:52px;justify-content:center;font-size:14px;cursor:pointer}
+.updates-page #updates-form button:disabled,.updates-page #updates-unsubscribe:disabled{opacity:.65;cursor:wait}
+.updates-page #updates-status{min-height:25px;margin:2px 0 0;color:var(--muted);font-size:13px;line-height:1.6}
+.updates-page #updates-status[data-state="success"]{color:#176341;font-weight:650}
+.updates-page #updates-status[data-state="error"]{color:#a23b2b;font-weight:650}
+.updates-page #updates-unsubscribe{display:flex;margin:8px auto 22px;cursor:pointer}
+.updates-page .fineprint{max-width:530px;margin:12px auto 0;color:var(--muted);font-size:11px;line-height:1.7;text-align:center}
+html[data-theme=dark] .updates-page .auth-card{background:#192c22;border-color:#2c4035;box-shadow:0 20px 60px #0002}
+html[data-theme=dark] .updates-page #updates-email{background:#10231b;color:#e3eddf;border-color:#344a3c}
+html[data-theme=dark] .updates-page .updates-consent{color:#b6c7bb}
+html[data-theme=dark] .updates-page #updates-status[data-state="success"]{color:#9fe0b5}
+html[data-theme=dark] .updates-page #updates-status[data-state="error"]{color:#ffb4a8}
+@media(max-width:600px){.updates-page .auth-card{margin:0 auto 28px;border-radius:16px;padding:25px 20px}.updates-page .auth-card>p:first-of-type{font-size:13px}.updates-page .updates-consent{font-size:12px}}
