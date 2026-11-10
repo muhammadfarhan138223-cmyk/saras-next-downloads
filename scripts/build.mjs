@@ -55,7 +55,7 @@ for (const file of pages) {
       ? '<a id="download-installer" class="download-cta" href="'+(localDownload||'/api/download')+'" '+(localDownload?'download':'')+' aria-describedby="download-status"><span class="download-cta-icon" aria-hidden="true">↓</span><span class="download-cta-copy"><strong>Download SARAS for Windows</strong><small>Setup EXE · '+fileSize+' MiB · Free preview</small></span><span class="download-cta-arrow" aria-hidden="true">→</span></a><p id="download-status" class="download-status" role="status" aria-live="polite">Official Windows installer · '+fileSize+' MiB · No Python install needed.</p>'
       : '<button class="download-cta is-unavailable" type="button" disabled aria-disabled="true"><span class="download-cta-icon" aria-hidden="true">…</span><span class="download-cta-copy"><strong>Windows download is being verified</strong><small>Check this page again for availability.</small></span></button><p class="download-status" role="status">The verified Windows download is temporarily unavailable.</p>';
     html = html.replace('<!-- DOWNLOAD_ACTION -->', control);
-    html = html.replaceAll('__SARAS_VERSION__',windowsRelease.version).replaceAll('__SARAS_SHA256__',windowsRelease.sha256);
+    html = html.replaceAll('__SARAS_VERSION__',windowsRelease.version).replaceAll('__SARAS_SHA256__',windowsRelease.sha256).replaceAll('__SARAS_DATE__',windowsRelease.publishedAt || '');
     html = html.replace('</head>', '<link rel="stylesheet" href="/assets/download.css"></head>');
     html = html.replace('</body>', '<script defer src="/assets/download.js"></script></body>');
   }
@@ -74,7 +74,7 @@ for (const file of pages) {
 
 const indexablePages = pages.filter(file => !['404.html', 'offline.html'].includes(path.basename(file)));
 const paths = indexablePages.map(file => '/' + path.relative(output, file).replaceAll('\\', '/').replace(/index\.html$/, ''));
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(url => `<url><loc>${base}${url}</loc></url>`).join('')}</urlset>`;
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(url => `<url><loc>${base}${url}</loc>${['/download/','/history/','/releases/'].includes(url)&&windowsRelease.publishedAt?`<lastmod>${windowsRelease.publishedAt}</lastmod>`:''}</url>`).join('')}</urlset>`;
 await writeFile(path.join(output, 'sitemap.xml'), sitemap);
 await writeFile(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${base}/sitemap.xml\n`);
 console.log(`Built ${pages.length} HTML pages for ${base}`);

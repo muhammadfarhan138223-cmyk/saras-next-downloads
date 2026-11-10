@@ -20,5 +20,6 @@
     "authenticode": false,
     "defender": true,
     "independentSecurityReview": false
-  }
+  },
+  "publishedAt": "2026-11-10"
 }
