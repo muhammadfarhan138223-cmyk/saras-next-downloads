@@ -1,12 +1,12 @@
 {
-  "version": "2.0.0-dev.8",
+  "version": "2.0.0-dev.9",
   "enabled": true,
   "approvedForPublication": true,
   "channel": "unsigned-preview",
   "unsignedAcknowledged": true,
-  "url": "https://github.com/muhammadfarhan138223-cmyk/saras-next-downloads/releases/download/v2.0.0-dev.8/SARAS-Next-2.0.0-dev.8-Windows-x64-Setup.exe",
-  "sha256": "8cfe79a123d54bc116c78195771db298d504180f17d10b5a4ebb59a02273b5f9",
-  "bytes": 284038122,
+  "url": "https://github.com/muhammadfarhan138223-cmyk/saras-next-downloads/releases/download/v2.0.0-dev.9/SARAS-Next-2.0.0-dev.9-Windows-x64-Setup.exe",
+  "sha256": "87b20217db0c9b056b7950e40a56d45fc749c29662117af665c9457ab2de34f8",
+  "bytes": 284043629,
   "checks": {
     "build": true,
     "installedRuntime": true,
