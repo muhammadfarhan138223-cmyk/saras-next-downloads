@@ -74,7 +74,7 @@ for (const file of pages) {
 
 const indexablePages = pages.filter(file => !['404.html', 'offline.html'].includes(path.basename(file)));
 const paths = indexablePages.map(file => '/' + path.relative(output, file).replaceAll('\\', '/').replace(/index\.html$/, ''));
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(url => `<url><loc>${base}${url}</loc>${['/download/','/history/','/releases/'].includes(url)&&windowsRelease.publishedAt?`<lastmod>${windowsRelease.publishedAt}</lastmod>`:''}</url>`).join('')}</urlset>`;
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(url => `<url><loc>${base}${url}</loc>${['/download/','/history/','/releases/','/companion-guide/'].includes(url)&&windowsRelease.publishedAt?`<lastmod>${windowsRelease.publishedAt}</lastmod>`:''}</url>`).join('')}</urlset>`;
 await writeFile(path.join(output, 'sitemap.xml'), sitemap);
 await writeFile(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${base}/sitemap.xml\n`);
 console.log(`Built ${pages.length} HTML pages for ${base}`);
